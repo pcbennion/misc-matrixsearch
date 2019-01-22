@@ -9,45 +9,59 @@ import csv
 
 class Element:
 	value = 0
-	coords = {0, 0}
+	coords = (0,0)
 	up = []
 	right = []
 
-	def search(self, target) :
-		print(self.value)
+	def matrixSearch(self, target) :
+		print("{0}: {1}".format(self.value, self.coords))
 		try :
 			if self.value == target :
 				return self.coords
 			elif self.value < target :
-				self.right.search(target, output)
+				return self.right.matrixSearch(target)
 			else :
-				self.up.search(target, output)
+				return self.up.matrixSearch(target)
 		except :
-			return output
+			return None
 
-def matrixSearch(e, target) :
-	e.search(target, ret)
-	return ret
+	def bruteSearch(self, target) :
+		row = self.bruteSearchRow(target)
+		if row != None :
+			return row
+		else :
+			try :
+				return self.up.bruteSearch(target)
+			except :
+				return None
+
+	def bruteSearchRow(self, target) :
+		print("{0}: {1}".format(self.value, self.coords))
+		if self.value == target :
+			return self.coords
+		else :
+			try :
+				return self.right.bruteSearchRow(target)
+			except :
+				return None
 
 if __name__ == '__main__':
-	print(sys.argv)
 	argv = sys.argv
 	assert(len(sys.argv) == 3)
 	with open(str(argv[1]), 'rb') as file :
 		reader = csv.reader(file)
+		matrix = list()
 		for csvrow in reader :
-			print(csvrow)
-			matrix = list()
 			row = list()
 			for value in csvrow :
 				e = Element()
-				e.value = value
+				e.value = int(value)
 				row.append(e)
-				print(e.value)
 			matrix.append(row)
-		for m in range(len(matrix), 0) :
+		for m in range(-1, -len(matrix)-1, -1) :
 			for n in range(0, len(matrix[0])) :
-				e.coords = {m, n}
+				e = matrix[m][n]
+				e.coords = (m+4, n)
 				try :
 					e.up = matrix[m-1][n]
 				except :
@@ -56,6 +70,5 @@ if __name__ == '__main__':
 					e.right = matrix[m][n+1] 
 				except :
 					e.right = None
-		print(matrixSearch(matrix[len(matrix)][0], argv[3]))
-
-
+		print("\t"+str(matrix[-1][0].matrixSearch(int(argv[2]))))
+		print("\t"+str(matrix[-1][0].bruteSearch(int(argv[2]))))
